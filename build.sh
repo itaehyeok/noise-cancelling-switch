@@ -82,6 +82,8 @@ build_app() {
   cp "$VENDOR_DIR/airpods-control" "$APP/Contents/Resources/"
   cp "$VENDOR_DIR/avbypass.dylib" "$APP/Contents/Resources/"
   chmod +x "$APP/Contents/Resources/airpods-control"
+  # 헬퍼가 MIT 라 바이너리를 나눠 줄 때 라이선스 고지를 같이 넣어야 한다.
+  cp THIRD_PARTY_NOTICES.md "$APP/Contents/Resources/"
 
   log "ad-hoc 서명 중..."
   codesign --force --sign - "$APP/Contents/Resources/avbypass.dylib"
@@ -113,6 +115,16 @@ case "${1:-build}" in
     log "설치 완료: $INSTALL_DIR/$APP_NAME.app"
     log "로그인 항목 자동 실행을 쓰려면 이 위치에서 실행하세요."
     ;;
+  zip)
+    # 릴리스 첨부용. 파일 이름에 버전을 넣지 않아야
+    # releases/latest/download/ 주소가 버전이 바뀌어도 그대로 맞는다.
+    build_app
+    rm -f "$BUILD_DIR/$EXECUTABLE.zip"
+    # 확장 속성은 빼고 묶는다. 넣으면 ._ 파일로 들어가서, ditto 가 아닌 도구로 풀면
+    # 번들 안에 남아 서명이 깨진다.
+    ditto -c -k --norsrc --noextattr --noacl --keepParent "$APP" "$BUILD_DIR/$EXECUTABLE.zip"
+    log "릴리스용 압축 완료: $BUILD_DIR/$EXECUTABLE.zip"
+    ;;
   vendor)
     log "번들된 헬퍼를 버리고 $HELPER_DIR 에서 다시 가져옵니다..."
     rm -f "$VENDOR_DIR/airpods-control" "$VENDOR_DIR/avbypass.dylib"
@@ -124,6 +136,6 @@ case "${1:-build}" in
     log "정리했습니다. 번들된 헬퍼까지 새로 받으려면 ./build.sh vendor 를 쓰세요."
     ;;
   *)
-    die "사용법: ./build.sh [build|run|install|vendor|clean]"
+    die "사용법: ./build.sh [build|run|install|zip|vendor|clean]"
     ;;
 esac

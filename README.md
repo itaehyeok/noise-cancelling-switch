@@ -12,13 +12,36 @@
 
 단축키 기본값은 **미할당**이다. 설정창에서 직접 지정해야 작동한다.
 
-## 요구 사항
+## 설치
+
+**Apple Silicon 맥, macOS 13 이상.** 코드를 받을 필요 없이 터미널에 아래를 붙여 넣으면
+최신 릴리스를 받아 `/Applications` 에 깔고 실행한다. 새 버전이 나오면 같은 명령을 다시 실행하면 된다.
+
+```bash
+pkill -x NoiseCancellingSwitch; \
+curl -fL https://github.com/itaehyeok/noise-cancelling-switch/releases/latest/download/NoiseCancellingSwitch.zip -o /tmp/NoiseCancellingSwitch.zip \
+  && ditto -x -k /tmp/NoiseCancellingSwitch.zip /Applications \
+  && open "/Applications/Noise Cancelling Switch.app"
+```
+
+처음 실행하면 설정창이 뜬다. 거기서 단축키를 지정하고, 원하면 로그인 시 자동 실행을 켠다.
+
+브라우저로 받아도 된다. [Releases](https://github.com/itaehyeok/noise-cancelling-switch/releases/latest) 에서
+`NoiseCancellingSwitch.zip` 을 받아 풀고 앱을 응용 프로그램 폴더로 옮긴 뒤, **처음 한 번** 아래 명령을 실행한다.
+공증을 받을 수 없는 앱이라([빌드 설정에서 건드리면 안 되는 것](#빌드-설정에서-건드리면-안-되는-것))
+브라우저로 받은 그대로 열면 macOS 가 막는다. 위의 `curl` 로 받으면 이 단계가 필요 없다.
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Noise Cancelling Switch.app"
+```
+
+## 소스에서 빌드
+
+필요한 것:
 
 - macOS 13 이상 (개발과 테스트는 macOS 26.5.1)
 - Xcode 또는 Command Line Tools (swiftc, codesign, lipo)
 - `airpods-control` 헬퍼 빌드 결과물
-
-## 빌드
 
 헬퍼를 먼저 빌드한다. Homebrew 설치는 Command Line Tools 버전 검사에 걸릴 수 있으므로
 소스 빌드가 확실하다.
@@ -37,6 +60,7 @@ cd noise-cancelling-switch
 ./build.sh            # 빌드만
 ./build.sh run        # 빌드 후 실행
 ./build.sh install    # 빌드 후 /Applications 에 설치
+./build.sh zip        # 릴리스에 붙일 build/NoiseCancellingSwitch.zip 만들기
 ./build.sh clean
 ```
 
@@ -97,6 +121,7 @@ Noise Cancelling Switch.app/Contents/
   MacOS/NoiseCancellingSwitch  앱 본체
   Resources/airpods-control    제어 헬퍼
   Resources/avbypass.dylib     헬퍼가 쓰는 엔타이틀먼트 우회 라이브러리
+  Resources/THIRD_PARTY_NOTICES.md  헬퍼의 MIT 라이선스 고지
 ```
 
 - **쓰기**(모드 변경)는 헬퍼를 서브프로세스로 실행해서 한다.
@@ -110,7 +135,8 @@ Noise Cancelling Switch.app/Contents/
 
 **하드닝 런타임을 켜지 마라.** 헬퍼가 `DYLD_INSERT_LIBRARIES` 로 자기 자신을 재실행해야 하는데,
 하드닝 런타임이 켜지면 그 환경변수가 무시되어 조용히 실패한다. 그래서 ad-hoc 서명만 한다.
-같은 이유로 앱 스토어 배포와 공증은 불가능하다. 개인용 빌드 전용이다.
+같은 이유로 앱 스토어 배포와 공증은 불가능하다. 릴리스도 ad-hoc 서명이라,
+브라우저로 받으면 [설치](#설치)에 적은 대로 격리 표시를 지워야 열린다.
 
 ## 반응 속도
 
