@@ -10,7 +10,7 @@
 적응형 모드는 토글 대상에서 뺐다. 아이폰이나 손동작으로 적응형이나 끔 상태가 되어 있어도
 다음 토글에서 노이즈 캔슬링이나 주변음 허용 중 하나로 복귀한다.
 
-단축키 기본값은 **미할당**이다. 설정창에서 직접 지정해야 작동한다.
+기본 단축키는 **⌃⌥Z** 다. 설정창에서 바꾸거나 지울 수 있고, 한 번 정하거나 지우면 그 값이 유지된다.
 
 ## 설치
 
@@ -24,7 +24,7 @@ curl -fL https://github.com/itaehyeok/noise-cancelling-switch/releases/latest/do
   && open "/Applications/Noise Cancelling Switch.app"
 ```
 
-처음 실행하면 설정창이 뜬다. 거기서 단축키를 지정하고, 원하면 로그인 시 자동 실행을 켠다.
+처음 실행하면 설정창이 뜬다. **⌃⌥Z** 로 바로 토글되고, 단축키 변경과 로그인 시 자동 실행은 거기서 한다.
 
 브라우저로 받아도 된다. [Releases](https://github.com/itaehyeok/noise-cancelling-switch/releases/latest) 에서
 `NoiseCancellingSwitch.zip` 을 받아 풀고 앱을 응용 프로그램 폴더로 옮긴 뒤, **처음 한 번** 아래 명령을 실행한다.

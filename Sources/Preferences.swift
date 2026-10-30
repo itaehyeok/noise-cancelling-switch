@@ -43,9 +43,16 @@ enum Preferences {
 
     private static var defaults: UserDefaults { .standard }
 
-    /// 기본값은 미할당이다. 사용자가 설정창에서 직접 지정해야 작동한다.
+    /// 아직 한 번도 정하지 않았을 때 쓰는 단축키(⌃⌥Z). 왼손 하나로 누를 수 있고,
+    /// 시스템 단축키·Xcode 메뉴·창 정리 앱(Magnet·Rectangle) 기본값과 겹치지 않는다.
+    static let defaultHotkey = HotkeyCombo(keyCode: UInt32(kVK_ANSI_Z),
+                                           carbonModifiers: UInt32(controlKey | optionKey))
+
+    /// 한 번도 정한 적이 없으면 기본 단축키를 쓴다.
+    /// 사용자가 설정창에서 지운 경우는 `hotkey.assigned = false` 로 남아 미할당이 유지된다.
     static var hotkey: HotkeyCombo? {
         get {
+            guard defaults.object(forKey: hasHotkeyKey) != nil else { return defaultHotkey }
             guard defaults.bool(forKey: hasHotkeyKey) else { return nil }
             let code = UInt32(defaults.integer(forKey: keyCodeKey))
             let mods = UInt32(defaults.integer(forKey: modifiersKey))
